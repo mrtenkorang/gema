@@ -8,7 +8,6 @@ Widget bottomChips({required BuildContext context, required String title, requir
   final textColor = brightness == Brightness.dark ? Colors.white : Colors.black;
 
   return Container(
-    width: 85,
     height: 85,
     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
     decoration: BoxDecoration(
@@ -25,22 +24,28 @@ Widget bottomChips({required BuildContext context, required String title, requir
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          count.toString(),
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.bold,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            count.toString(),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: textColor.withOpacity(0.9),
-            fontWeight: FontWeight.w500,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            title,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: textColor.withOpacity(0.9),
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
           ),
         ),
       ],

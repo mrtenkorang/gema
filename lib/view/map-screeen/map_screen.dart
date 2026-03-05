@@ -73,27 +73,53 @@ class MapScreen extends StatelessWidget {
     return SizedBox(
       height: 90,
       width: MediaQuery.of(context).size.width - 20,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        child: Row(
-          children: [
-            bottomChips(
+      child: Row(
+        children: [
+          Expanded(
+            child: bottomChips(
               context: context,
               title: "Unvisited",
               count: 1,
-              color: Theme.of(context).colorScheme.error,
+              color: Theme.of(context).colorScheme.secondary,
             ),
-            const SizedBox(width: 12),
-            bottomChips(
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: bottomChips(
               context: context,
               title: "Visited",
               count: 20,
               color: Theme.of(context).primaryColor,
             ),
-            const SizedBox(width: 12),
-          ],
-        ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: bottomChips(
+              context: context,
+              title: "Partial",
+              count: 5,
+              color: Colors.orange,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: bottomChips(
+              context: context,
+              title: "Drafts",
+              count: 3,
+              color: Colors.blueGrey,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: bottomChips(
+              context: context,
+              title: "Passed",
+              count: 10,
+              color: Colors.red,
+            ),
+          ),
+        ],
       ),
     );
   }
