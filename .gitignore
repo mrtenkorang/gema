@@ -8,6 +8,9 @@
 .history
 
 
+.dart_tool/
+.idea/
+
 
 # Flutter repo-specific
 /bin/cache/
