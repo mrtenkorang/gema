@@ -40,7 +40,7 @@ class MapScreen extends StatelessWidget {
 
           // Uncomment if you have markers/polygons
           // markers: controller.markers,
-          // polygons: controller.polygons,
+          polygons: controller.polygons,
 
           // onMapCreated: (GoogleMapController mapController) {
           //   controller.mapController = mapController;
