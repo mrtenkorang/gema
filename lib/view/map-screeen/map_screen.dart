@@ -15,6 +15,7 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    mapScreenController.mapScreenContext = context;
     return Scaffold(
       body: Stack(
         children: [
