@@ -34,7 +34,7 @@ class AppColors {
 
 class AppTheme {
   // Define your font family
-  static const String fontFamily = 'Montserrat'; // Replace with your actual font family
+  static const String fontFamily = 'Montserrat';
 
   static TextTheme _buildTextTheme(TextTheme base, Color textColor) {
     return base.copyWith(
