@@ -1,74 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/register/register_owner/register_owner_screen.dart';
 import 'package:gema/view/register/register_widgets/action_container.dart';
 import 'package:get/get.dart';
 
 class RegisterInitScreen extends StatelessWidget {
-  const RegisterInitScreen({super.key});
+  const RegisterInitScreen({super.key,});
+
 
   @override
   Widget build(BuildContext context) {
-    final registerController = Get.put(RegisterController());
 
+    final registerController = Get.put(RegisterController());
     return Scaffold(
       appBar: AppBar(
         title: const Text("Property Registration"),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-        child: Column(
+        child: Obx(()=> Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            Text(
-              "Property Rate",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.bold,
+            // Obx(()=> ,),
+            Row(
+              children: [
+                Text(
+                  "Property Rate",
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if(registerController.ownerDetails.isNotEmpty)
+                  Spacer(),
+                if(registerController.ownerDetails.isNotEmpty)
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context){
+                        return RegisterOwnerScreen();
+                      }));
+                    },
+                    child: Container(
+                      width: 80,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(20)
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color:Theme.of(context).colorScheme.onPrimary ,),
+                          Text("Owner", style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.onPrimary
+                          ),)
+                        ],
+                      ),
+                    ),
+                  )
+              ],
+            ),
+            const SizedBox(height: 10),
+
+
+            registerController.ownerDetails.isEmpty?
+            Column(
+              children: [
+                ActionContainer(
+                  title: "Owner",
+                  icon: Icons.person,
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                      return RegisterOwnerScreen();
+                    }));
+                  },
+                  description: "Register owner of property",
+                ),
+
+                const SizedBox(height: 10),
+
+                ActionContainer(
+                  title: "POC",
+                  icon: Icons.group,
+                  onTap: () {},
+                  description: "Register point of contact",
+                ),
+
+                const SizedBox(height: 10),
+
+                ActionContainer(
+                  title: "Pass",
+                  icon: Icons.play_arrow_outlined,
+                  onTap: () {},
+                  description: "Ignore property(for now)",
+                ),
+
+                const SizedBox(height: 10),
+
+                ActionContainer(
+                  title: "N/A",
+                  icon: Icons.close,
+                  onTap: () {},
+                  description: "No contact available",
+                ),
+              ],
+            ):SingleChildScrollView(
+              child: Column(
+                children: [
+                  for(final owner in registerController.ownerDetails)
+                    ownerDisplayCard(ownerInfo: owner, context: context)
+
+                ],
               ),
             ),
 
             const SizedBox(height: 10),
-
-            ActionContainer(
-              title: "Owner",
-              icon: Icons.person,
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                  return RegisterOwnerScreen();
-                }));
-              },
-              description: "Register owner of property",
-            ),
-
-            const SizedBox(height: 10),
-
-            ActionContainer(
-              title: "POC",
-              icon: Icons.group,
-              onTap: () {},
-              description: "Register point of contact",
-            ),
-
-            const SizedBox(height: 10),
-
-            ActionContainer(
-              title: "Pass",
-              icon: Icons.play_arrow_outlined,
-              onTap: () {},
-              description: "Ignore property(for now)",
-            ),
-
-            const SizedBox(height: 10),
-
-            ActionContainer(
-              title: "N/A",
-              icon: Icons.close,
-              onTap: () {},
-              description: "No contact available",
-            ),
-
-            const SizedBox(height: 20),
 
             Text(
               "Businesses",
@@ -113,7 +160,7 @@ class RegisterInitScreen extends StatelessWidget {
               }),
             )
           ],
-        ),
+        )),
       ),
 
         floatingActionButton: Row(
@@ -132,10 +179,177 @@ class RegisterInitScreen extends StatelessWidget {
               heroTag: "fab2",
               onPressed: () {},
               icon: const Icon(Icons.group),
-              label: const Text("Add POC"),
+              label: const Text("Add Business POC"),
             ),
           ],
         )
+    );
+  }
+
+  Widget ownerDisplayCard({required RegisterOwnerModel ownerInfo, required BuildContext context}){
+    final theme = Theme.of(context);
+    return Container(
+      margin: EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(10)
+      ),
+      child: ListTile(
+        onTap: ()async{
+          await actionBottomSheet(context, ownerInfo);
+        },
+        leading: Icon(Icons.person, color: theme.primaryColor,),
+        title: Text(ownerInfo.ownerName, style: theme.textTheme.titleLarge!.copyWith(
+          color: theme.colorScheme.primary
+        )
+          ,),
+      ),
+    );
+  }
+
+  Future<dynamic> actionBottomSheet(BuildContext context, RegisterOwnerModel ownerInfo) {
+
+    debugPrint("THE GPS:::::::${ownerInfo.toJson()}");
+    return showModalBottomSheet(
+      context: context,
+      // isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          // padding: EdgeInsets.fromLTRB(
+          //   16,
+          //   16,
+          //   16,
+          //   16 + MediaQuery.of(context).viewInsets.bottom,
+          // ),
+          child: Column(
+            // mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: Icon(Icons.person, color: theme.primaryColor),
+                title: Text(ownerInfo.ownerName),
+              ),
+              ListTile(
+                leading: Icon(Icons.call, color: theme.primaryColor),
+                title: Text(ownerInfo.contactNumber),
+              ),
+              ListTile(
+                leading: Icon(Icons.mail, color: theme.primaryColor),
+                title: Text(ownerInfo.email),
+              ),
+              ListTile(
+                leading: Icon(Icons.location_on, color: theme.primaryColor),
+                title: Text(ownerInfo.gpsLocation),
+              ),
+              ListTile(
+                leading: Icon(Icons.apartment, color: theme.primaryColor),
+                title: Text(ownerInfo.propertyDetails),
+              ),
+              ListTile(
+                leading: Icon(Icons.money, color: theme.primaryColor),
+                title: Text("Payment Method: ${ownerInfo.paymentMethod}"),
+              ),
+              ListTile(
+                leading: Icon(Icons.phone, color: theme.primaryColor),
+                title: Text("Communication Method: ${ownerInfo.communicationMethod}"),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: (){
+
+                          Navigator.pop(context);
+
+                          Navigator.push(context, MaterialPageRoute(builder: (context){
+                            return RegisterOwnerScreen(ownerInfo: ownerInfo,);
+                          }));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Edit",
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: (){
+                          final registerController = Get.put(RegisterController());
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Delete Owner"),
+                              content: const Text("Are you sure you want to delete this owner?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context, false);
+                                    await registerController.deleteOwner();
+                                  },
+                                  child: const Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child:  Text("Delete", style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    color: Theme.of(context).colorScheme.error
+                                  ),),
+                                ),
+                              ],
+                            ),
+                          );
+                          //     .then((value) async {
+                          //   final registerController = Get.put(RegisterController());
+                          //   if (value == true) {
+                          //     await registerController.deleteOwner(ownerInfo.id);
+                          //     Navigator.pop(context);
+                          //   }
+                          // }
+                          // );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.error,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Delete",
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+          ]),
+        );
+      },
     );
   }
 }

@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/shared/widgets/button.dart';
 import 'package:gema/view/shared/widgets/choice_chip.dart';
 import 'package:gema/view/shared/widgets/textfield.dart';
 import 'package:get/get.dart';
 
-class RegisterOwnerScreen extends StatelessWidget {
-  const RegisterOwnerScreen({super.key});
+class RegisterOwnerScreen extends StatefulWidget {
+  const RegisterOwnerScreen({super.key, this.ownerInfo});
+  final RegisterOwnerModel? ownerInfo;
+
+  @override
+  State<RegisterOwnerScreen> createState() => _RegisterOwnerScreenState();
+}
+
+class _RegisterOwnerScreenState extends State<RegisterOwnerScreen> {
+  final registerController = Get.put(RegisterController());
+  @override
+  void initState() {
+    super.initState();
+    if (widget.ownerInfo!.allFieldsPopulated()) {
+      registerController.ownerInfo = widget.ownerInfo;
+      registerController.initOwnerFields();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -491,7 +508,7 @@ class RegisterOwnerScreen extends StatelessWidget {
                         registerController.pageNumber.value--;
                       }
                     },
-                     child: Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
@@ -513,22 +530,24 @@ class RegisterOwnerScreen extends StatelessWidget {
                     backgroundColor: theme.primaryColor,
                     isFullWidth: false,
                     onTap: () async {
-                      if(registerController.pageNumber.value<3){
-                      //Increase page number to move to the next page
-                      registerController.pageNumber.value++;}else{
+                      if (registerController.pageNumber.value < 3) {
+                        //Increase page number to move to the next page
+                        registerController.pageNumber.value++;
+                      } else {
                         registerController.saveOwnerInfoOffline();
                       }
                     },
-                    child: Obx(() => registerController.pageNumber.value < 3
-                        ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Next"),
-                        SizedBox(width: 5),
-                        Icon(Icons.arrow_forward),
-                      ],
-                    )
-                        : Text("Save"),
+                    child: Obx(
+                      () => registerController.pageNumber.value < 3
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Next"),
+                                SizedBox(width: 5),
+                                Icon(Icons.arrow_forward),
+                              ],
+                            )
+                          : Text("Save"),
                     ),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:gema/controller/db/db.dart';
 import 'package:gema/controller/db/table_heads.dart';
+import 'package:gema/controller/models/register_owner_model.dart';
 
 class Queries {
   final tableHeads = TableHeads();
@@ -9,15 +10,27 @@ class Queries {
     return await db.insert(tableHeads.ownerInfoTableName, data);
   }
 
-  Future<List<Map<String, dynamic>>> getOwnerInfo() async {
+  Future<List<RegisterOwnerModel>> getOwnerInfo() async {
     final db = await DatabaseService().database;
-    return await db.query(tableHeads.ownerInfoTableName);
+    final List<Map<String, dynamic>> data = await db.query(tableHeads.ownerInfoTableName);
+    return data.map<RegisterOwnerModel>((e) => RegisterOwnerModel.fromJson(e)).toList();
   }
 
-  Future<int> updateOwnerInfo(int id, Map<String, dynamic> data) async {
+
+  Future<List<RegisterOwnerModel>> getOwnerInfoByPolygonId(String polygonId) async {
     final db = await DatabaseService().database;
-    return await db.update(tableHeads.ownerInfoTableName, data,
-        where: '${tableHeads.id} = ?', whereArgs: [id]);
+    final List<Map<String, dynamic>> data = await db.query(
+      tableHeads.ownerInfoTableName,
+      where: '${tableHeads.polygonID} = ?',
+      whereArgs: [polygonId],
+    );
+    return data.map<RegisterOwnerModel>((e) => RegisterOwnerModel.fromJson(e)).toList();
+  }
+
+  Future<int> updateOwnerInfo(RegisterOwnerModel ownerInfo) async {
+    final db = await DatabaseService().database;
+    return await db.update(tableHeads.ownerInfoTableName, ownerInfo.toJson(),
+        where: '${tableHeads.id} = ?', whereArgs: [ownerInfo.id]);
   }
 
   Future<int> deleteOwnerInfo(int id) async {

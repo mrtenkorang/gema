@@ -11,6 +11,8 @@ class RegisterController extends GetxController {
   final constants = Constants();
   final query = Queries();
 
+  RegisterOwnerModel? ownerInfo;
+
   RxList<String> businesses = <String>[].obs;
   RxList<String> titles = <String>[
     "Dr.",
@@ -116,11 +118,66 @@ class RegisterController extends GetxController {
   TextEditingController otherPropertyTypeController = TextEditingController();
   TextEditingController otherOccupierController = TextEditingController();
 
+  void initOwnerFields() {
+    ownerNameController.text = ownerInfo!.ownerName;
+    contactNumberController.text = ownerInfo!.contactNumber;
+    ghanaCardController.text = ownerInfo!.ghanaCardNumber;
+    emailController.text = ownerInfo!.ghanaCardNumber;
+    gpsLocationController.text = ownerInfo!.gpsLocation;
+    streetNameController.text = ownerInfo!.streetName;
+    selectedMethodOfPayment.value = ownerInfo!.paymentMethod;
+    selectedPropertyDetails.value = ownerInfo!.propertyDetails;
+    selectedRoom.value = ownerInfo!.rooms;
+    selectedMethodOfCommunication.value = ownerInfo!.communicationMethod;
+    selectedPropertyState.value = ownerInfo!.propertyState;
+
+    if (locations.contains(ownerInfo!.location)) {
+      selectedLocation.value = ownerInfo!.location;
+    } else {
+      selectedLocation.value = "Others";
+      otherLocationController.text = ownerInfo!.location;
+    }
+
+    if (titles.contains(ownerInfo!.title)) {
+      selectedTitle.value = ownerInfo!.title;
+    } else {
+      selectedTitle.value = "Others";
+      otherTitleController.text = ownerInfo!.title;
+    }
+
+    if (propertyTypes.contains(ownerInfo!.propertyType)) {
+      selectedPropertyType.value = ownerInfo!.propertyType;
+    } else {
+      selectedPropertyType.value = "Others";
+      otherPropertyTypeController.text = ownerInfo!.title;
+    }
+
+    if (occupiers.contains(ownerInfo!.occupier)) {
+      selectedOccupier.value = ownerInfo!.occupier;
+    } else {
+      selectedOccupier.value = "Others";
+      otherOccupierController.text = ownerInfo!.occupier;
+    }
+  }
+
+  RxList<RegisterOwnerModel> ownerDetails = <RegisterOwnerModel>[].obs;
+
+  RxString polygonId = "".obs;
+
+  void getOwnerDetails() async {
+    ownerDetails.value = await query.getOwnerInfoByPolygonId(polygonId.value);
+  }
+
+  Future<void> deleteOwner() async {
+    debugPrint("THE OWNER ::::::::::::: ${ownerInfo!.toJson()}");
+    await query.deleteOwnerInfo(ownerInfo!.id!);
+    getOwnerDetails();
+  }
+
   void saveOwnerInfoOffline() async {
     final ownerModel = RegisterOwnerModel(
-
       agentID: "1",
-      polygonID: "1",
+      polygonID: polygonId.value,
       title: selectedTitle.value.isNotEmpty
           ? selectedTitle.value
           : otherTitleController.text,
@@ -160,24 +217,30 @@ class RegisterController extends GetxController {
       status: constants.pendingStatus,
     );
 
-    Map<String, dynamic> ownerInfo = ownerModel.toJson();
+    Map<String, dynamic> owner = ownerModel.toJson();
 
-    debugPrint("THE OWNER DATA TO INSERT :::::::::::: $ownerInfo");
+    debugPrint("THE OWNER DATA TO INSERT :::::::::::: $owner");
+    int res;
 
     Globals.startLoading(registerOwnerScreenContext!);
-    final res = await query.insertOwnerInfo(ownerInfo);
+    if (ownerInfo!.allFieldsPopulated()) {
+      res = await query.updateOwnerInfo(ownerModel);
+    } else {
+      res = await query.insertOwnerInfo(owner);
+    }
     Globals.endLoading(registerOwnerScreenContext!);
     debugPrint("THE RESULT ::::::::: $res");
 
     if (res > 0) {
       Get.back();
+      // Fetch saved records
+      getOwnerDetails();
       Globals.showSnackBar(
         title: "Success",
         message: "Owner info saved successfully",
         backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
         textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
       );
-
     } else {
       Globals.showSnackBar(
         title: "Failed",

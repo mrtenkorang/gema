@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/register/register_init_screen.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreenController extends GetxController{
+  final registerController = Get.put(RegisterController());
 
   BuildContext? mapScreenContext;
 
@@ -44,6 +46,8 @@ class MapScreenController extends GetxController{
       const Offset(0.0000, 0.0002),
     ];
 
+    String polygonId = 'poly_';
+
     for (int i = 0; i < 5; i++) {
       final lat = center.latitude + displacements[i].dx;
       final lng = center.longitude + displacements[i].dy;
@@ -54,19 +58,20 @@ class MapScreenController extends GetxController{
         LatLng(lat + offset, lng + offset),
         LatLng(lat + offset, lng),
       ];
+      polygonId = "$polygonId$i";
 
       polygons.add(
         Polygon(
-          polygonId: PolygonId('poly_$i'),
+          polygonId: PolygonId(polygonId),
           points: points,
           fillColor: colors[i].withOpacity(0.5),
           strokeColor: colors[i],
           strokeWidth: 2,
           consumeTapEvents: true,
           onTap: ()async  {
-            await actionBottomSheet();
-            Get.snackbar('${titles[i]} Polygon', 'You clicked the ${titles[i]} polygon!', 
-                backgroundColor: colors[i].withOpacity(0.8), colorText: Colors.white);
+            await actionBottomSheet(polygonId);
+            // Get.snackbar('${titles[i]} Polygon', 'You clicked the ${titles[i]} polygon!',
+            //     backgroundColor: colors[i].withOpacity(0.8), colorText: Colors.white);
           },
         ),
       );
@@ -75,7 +80,7 @@ class MapScreenController extends GetxController{
   }
 
 
-  Future<dynamic> actionBottomSheet() {
+  Future<dynamic> actionBottomSheet(polygonId) {
     return showModalBottomSheet(
       context: mapScreenContext!,
       isScrollControlled: true,
@@ -100,7 +105,7 @@ class MapScreenController extends GetxController{
               Row(
                 children: [
                   Text(
-                    "P-1002-a20",
+                    polygonId,
                     style: theme.textTheme.titleLarge?.copyWith(
                       color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
@@ -138,6 +143,13 @@ class MapScreenController extends GetxController{
                   Expanded(
                     child: GestureDetector(
                       onTap: (){
+
+                        Navigator.pop(mapScreenContext!);
+                        //todo: Pass the actual polygon id
+                        // registerController.polygonId.value = polygonId;
+                        registerController.polygonId.value = "1";
+                        registerController.getOwnerDetails();
+
                         Navigator.push(context, MaterialPageRoute(builder: (context){
                           return RegisterInitScreen();
                         }));

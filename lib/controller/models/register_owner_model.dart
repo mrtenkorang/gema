@@ -1,4 +1,5 @@
 class RegisterOwnerModel {
+  int? id;
   String title;
   String location;
   String propertyType;
@@ -25,6 +26,7 @@ class RegisterOwnerModel {
   int? status;
 
   RegisterOwnerModel({
+     this.id,
     required this.title,
     required this.agentID,
     required this.polygonID,
@@ -51,6 +53,7 @@ class RegisterOwnerModel {
 
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "title": title,
       "location": location,
       "property_type": propertyType,
@@ -74,12 +77,13 @@ class RegisterOwnerModel {
 
   factory RegisterOwnerModel.fromJson(Map<String, dynamic> json) {
     return RegisterOwnerModel(
+      id: json["id"],
       title: json["title"] ?? "",
       agentID: json["agent_id"] ?? "",
       location: json["location"] ?? "",
       propertyType: json["property_type"] ?? "",
       propertyState: json["property_state"] ?? "",
-      rooms: json["rooms"] ?? "",
+      rooms: json["rooms"].toString(),
       occupier: json["occupier"] ?? "",
       propertyDetails: json["property_details"] ?? "",
       communicationMethod: json["communication_method"] ?? "",
@@ -90,8 +94,28 @@ class RegisterOwnerModel {
       email: json["email"] ?? "",
       streetName: json["street_name"] ?? "",
       polygonID: json["polygon_id"] ?? "",
-      gpsLocation: json["location_description"] ?? "",
+      gpsLocation: json["gps_location"] ?? "",
       status: json["status"],
     );
+  }
+
+
+  bool allFieldsPopulated() {
+    return title.isNotEmpty &&
+        location.isNotEmpty &&
+        propertyType.isNotEmpty &&
+        propertyState.isNotEmpty &&
+        rooms.isNotEmpty &&
+        occupier.isNotEmpty &&
+        propertyDetails.isNotEmpty &&
+        communicationMethod.isNotEmpty &&
+        paymentMethod.isNotEmpty &&
+        ownerName.isNotEmpty &&
+        contactNumber.isNotEmpty &&
+        ghanaCardNumber.isNotEmpty &&
+        email.isNotEmpty &&
+        streetName.isNotEmpty &&
+        polygonID.isNotEmpty &&
+        gpsLocation.isNotEmpty;
   }
 }
