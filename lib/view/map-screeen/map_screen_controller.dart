@@ -146,8 +146,8 @@ class MapScreenController extends GetxController{
 
                         Navigator.pop(mapScreenContext!);
                         //todo: Pass the actual polygon id
-                        // registerController.polygonId.value = polygonId;
-                        registerController.polygonId.value = "1";
+                        registerController.polygonId.value = polygonId;
+                        // registerController.polygonId.value = "1";
                         registerController.getOwnerDetails();
 
                         Navigator.push(context, MaterialPageRoute(builder: (context){

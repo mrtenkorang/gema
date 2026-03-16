@@ -64,5 +64,42 @@ class DatabaseService {
   ${tableHeads.status} INTEGER
 )
 ''');
+
+
+    await db.execute('''
+  CREATE TABLE ${tableHeads.pocInfoTableName} (
+  ${tableHeads.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${tableHeads.title} TEXT,
+  ${tableHeads.agentID} TEXT,
+  ${tableHeads.polygonID} TEXT,
+  ${tableHeads.location} TEXT,
+  ${tableHeads.propertyType} TEXT,
+  ${tableHeads.propertyState} TEXT,
+  ${tableHeads.rooms} INTEGER,
+  ${tableHeads.relationship} TEXT,
+  ${tableHeads.propertyDetails} TEXT,
+  ${tableHeads.communicationMethod} TEXT,
+  ${tableHeads.paymentMethod} TEXT,
+  ${tableHeads.ownerName} TEXT,
+  ${tableHeads.contactNumber} TEXT,
+  ${tableHeads.ghanaCardNumber} TEXT,
+  ${tableHeads.email} TEXT,
+  ${tableHeads.gpsLocation} TEXT,
+  ${tableHeads.streetName} TEXT,
+  ${tableHeads.status} INTEGER
+)
+''');
+
+
+    await db.execute('''
+  CREATE TABLE ${tableHeads.passPropertyTableName} (
+  ${tableHeads.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${tableHeads.reason} TEXT,
+  ${tableHeads.notes} TEXT,
+  ${tableHeads.agentID} TEXT,
+  ${tableHeads.polygonID} TEXT,
+  ${tableHeads.status} INTEGER
+)
+''');
   }
 }

@@ -19,7 +19,7 @@ class _RegisterOwnerScreenState extends State<RegisterOwnerScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.ownerInfo!.allFieldsPopulated()) {
+    if (widget.ownerInfo != null &&widget.ownerInfo!.allFieldsPopulated()) {
       registerController.ownerInfo = widget.ownerInfo;
       registerController.initOwnerFields();
     }
@@ -27,7 +27,6 @@ class _RegisterOwnerScreenState extends State<RegisterOwnerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final registerController = Get.put(RegisterController());
     registerController.registerOwnerScreenContext = context;
     final theme = Theme.of(context);
     return Scaffold(

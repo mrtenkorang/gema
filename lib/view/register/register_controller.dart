@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:gema/controller/constants/constants.dart';
 import 'package:gema/controller/db/queries.dart';
+import 'package:gema/controller/models/pass_property_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
+import 'package:gema/controller/models/register_poc_model.dart';
 import 'package:gema/view/shared/widgets/globals.dart';
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
   BuildContext? registerOwnerScreenContext;
+  BuildContext? registerPOCScreenContext;
+  BuildContext? passPropertyScreenContext;
 
   final constants = Constants();
   final query = Queries();
 
   RegisterOwnerModel? ownerInfo;
+  RegisterPocModel? pocInfo;
+  PassPropertyModel? passPropertyInfo;
 
   RxList<String> businesses = <String>[].obs;
   RxList<String> titles = <String>[
@@ -23,6 +29,19 @@ class RegisterController extends GetxController {
     "Miss",
     "Others",
   ].obs;
+  RxList<String> passPropertyReasons = <String>[
+    "Owner lives abroad", "Property locked", "Tenant refused info", "Owner deceased", "Other"
+  ].obs;
+
+  RxList<String> relationShips = <String>[
+    "Tenant",
+    "Security",
+    "Relative",
+    "Neighbor",
+    "Employee",
+    "Other",
+  ].obs;
+
   RxList<String> propertyTypes = <String>[
     "Residential",
     "Commercial",
@@ -104,6 +123,8 @@ class RegisterController extends GetxController {
   RxString selectedPropertyDetails = "".obs;
   RxString selectedMethodOfCommunication = "".obs;
   RxString selectedMethodOfPayment = "".obs;
+  RxString selectedPocRelationship = "".obs;
+  RxString selectedPassPropertyReason = "".obs;
 
   TextEditingController ownerNameController = TextEditingController();
   TextEditingController contactNumberController = TextEditingController();
@@ -116,7 +137,11 @@ class RegisterController extends GetxController {
   TextEditingController otherTitleController = TextEditingController();
   TextEditingController otherLocationController = TextEditingController();
   TextEditingController otherPropertyTypeController = TextEditingController();
+  TextEditingController otherPassPropertyReasonController = TextEditingController();
   TextEditingController otherOccupierController = TextEditingController();
+  TextEditingController notesController = TextEditingController();
+  TextEditingController otherPocRelationshipController =
+      TextEditingController();
 
   void initOwnerFields() {
     ownerNameController.text = ownerInfo!.ownerName;
@@ -160,18 +185,95 @@ class RegisterController extends GetxController {
     }
   }
 
+  void initPocFields() {
+    ownerNameController.text = pocInfo!.ownerName;
+    contactNumberController.text = pocInfo!.contactNumber;
+    ghanaCardController.text = pocInfo!.ghanaCardNumber;
+    emailController.text = pocInfo!.ghanaCardNumber;
+    gpsLocationController.text = pocInfo!.gpsLocation;
+    streetNameController.text = pocInfo!.streetName;
+    selectedMethodOfPayment.value = pocInfo!.paymentMethod;
+    selectedPropertyDetails.value = pocInfo!.propertyDetails;
+    selectedRoom.value = pocInfo!.rooms;
+    selectedMethodOfCommunication.value = pocInfo!.communicationMethod;
+    selectedPropertyState.value = pocInfo!.propertyState;
+
+    if (locations.contains(pocInfo!.location)) {
+      selectedLocation.value = pocInfo!.location;
+    } else {
+      selectedLocation.value = "Others";
+      otherLocationController.text = pocInfo!.location;
+    }
+
+    if (titles.contains(pocInfo!.title)) {
+      selectedTitle.value = pocInfo!.title;
+    } else {
+      selectedTitle.value = "Others";
+      otherTitleController.text = pocInfo!.title;
+    }
+
+    if (propertyTypes.contains(pocInfo!.propertyType)) {
+      selectedPropertyType.value = pocInfo!.propertyType;
+    } else {
+      selectedPropertyType.value = "Others";
+      otherPropertyTypeController.text = pocInfo!.title;
+    }
+
+    if (relationShips.contains(pocInfo!.relationship)) {
+      selectedOccupier.value = pocInfo!.relationship;
+    } else {
+      selectedOccupier.value = "Other";
+      otherOccupierController.text = pocInfo!.relationship;
+    }
+  }
+
+  void initPassPropertyFields() {
+    notesController.text = passPropertyInfo!.notes!;
+    if (passPropertyReasons.contains(passPropertyInfo!.reason)) {
+      selectedPassPropertyReason.value = passPropertyInfo!.reason!;
+    } else {
+      selectedTitle.value = "Other";
+      otherPassPropertyReasonController.text = passPropertyInfo!.reason!;
+    }
+  }
+
   RxList<RegisterOwnerModel> ownerDetails = <RegisterOwnerModel>[].obs;
+  RxList<RegisterPocModel> pocDetails = <RegisterPocModel>[].obs;
+  RxList<PassPropertyModel> passPropertyDetails = <PassPropertyModel>[].obs;
 
   RxString polygonId = "".obs;
 
   void getOwnerDetails() async {
+    debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
     ownerDetails.value = await query.getOwnerInfoByPolygonId(polygonId.value);
+  }
+
+  void getPassPropertyDetails() async {
+    debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
+    passPropertyDetails.value = await query.getPassPropertyInfoByPolygonId(polygonId.value);
+  }
+
+  void getPocDetails() async {
+    debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
+    pocDetails.value = await query.getPocInfoByPolygonId(polygonId.value);
   }
 
   Future<void> deleteOwner() async {
     debugPrint("THE OWNER ::::::::::::: ${ownerInfo!.toJson()}");
     await query.deleteOwnerInfo(ownerInfo!.id!);
     getOwnerDetails();
+  }
+
+  Future<void> deletePoc() async {
+    debugPrint("THE POC ::::::::::::: ${pocInfo!.toJson()}");
+    await query.deletePocInfo(pocInfo!.id!);
+    getPocDetails();
+  }
+
+  Future<void> deletePassProperty() async {
+    debugPrint("THE PASS PROPERTY ::::::::::::: ${passPropertyInfo!.toJson()}");
+    await query.deletePassPropertyInfo(passPropertyInfo!.id!);
+    getPassPropertyDetails();
   }
 
   void saveOwnerInfoOffline() async {
@@ -223,7 +325,8 @@ class RegisterController extends GetxController {
     int res;
 
     Globals.startLoading(registerOwnerScreenContext!);
-    if (ownerInfo!.allFieldsPopulated()) {
+    if (ownerInfo != null && ownerInfo!.allFieldsPopulated()) {
+      ownerModel.id = ownerInfo!.id;
       res = await query.updateOwnerInfo(ownerModel);
     } else {
       res = await query.insertOwnerInfo(owner);
@@ -238,6 +341,127 @@ class RegisterController extends GetxController {
       Globals.showSnackBar(
         title: "Success",
         message: "Owner info saved successfully",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    } else {
+      Globals.showSnackBar(
+        title: "Failed",
+        message: "An unknown error occurred, please try again later",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    }
+  }
+
+  void savePocInfoOffline() async {
+    final pocModel = RegisterPocModel(
+      agentID: "1",
+      polygonID: polygonId.value,
+      title: selectedTitle.value.isNotEmpty
+          ? selectedTitle.value
+          : otherTitleController.text,
+
+      location: selectedLocation.value.isNotEmpty
+          ? selectedLocation.value
+          : otherLocationController.text,
+
+      propertyType: selectedPropertyType.value.isNotEmpty
+          ? selectedPropertyType.value
+          : otherPropertyTypeController.text,
+
+      propertyState: selectedPropertyState.value,
+
+      rooms: selectedRoom.value,
+
+      propertyDetails: selectedPropertyDetails.value,
+
+      communicationMethod: selectedMethodOfCommunication.value,
+
+      paymentMethod: selectedMethodOfPayment.value,
+
+      ownerName: ownerNameController.text,
+
+      contactNumber: contactNumberController.text,
+
+      ghanaCardNumber: ghanaCardController.text,
+
+      email: emailController.text,
+
+      gpsLocation: gpsLocationController.text,
+      streetName: streetNameController.text,
+      status: constants.pendingStatus,
+      relationship: selectedPocRelationship.value.isNotEmpty
+          ? selectedPocRelationship.value
+          : otherPocRelationshipController.text,
+    );
+
+    Map<String, dynamic> poc = pocModel.toJson();
+
+    debugPrint("THE POC DATA TO INSERT :::::::::::: $poc");
+    int res;
+
+    Globals.startLoading(registerPOCScreenContext!);
+    if (pocInfo != null && pocInfo!.allFieldsPopulated()) {
+      pocModel.id = pocInfo!.id;
+      res = await query.updatePocInfo(pocModel);
+    } else {
+      res = await query.insertPocInfo(poc);
+    }
+    Globals.endLoading(registerPOCScreenContext!);
+    debugPrint("THE RESULT ::::::::: $res");
+
+    if (res > 0) {
+      Get.back();
+      // Fetch saved records
+      getPocDetails();
+      Globals.showSnackBar(
+        title: "Success",
+        message: "Poc info saved successfully",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    } else {
+      Globals.showSnackBar(
+        title: "Failed",
+        message: "An unknown error occurred, please try again later",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    }
+  }
+
+  void savePassPropertyInfoOffline() async {
+    final passPropertyModel = PassPropertyModel(
+      agentID: "1",
+      polygonID: polygonId.value,
+      reason: selectedPassPropertyReason.value,
+      notes: notesController.text,
+      status: constants.pendingStatus,
+    );
+
+    Map<String, dynamic> poc = passPropertyModel.toJson();
+
+    debugPrint("THE POC DATA TO INSERT :::::::::::: $poc");
+    int res;
+
+    Globals.startLoading(passPropertyScreenContext!);
+    if (passPropertyInfo != null && passPropertyInfo!.allFieldsPopulated()) {
+      passPropertyModel.id = passPropertyInfo!.id;
+      res = await query.updatePassPropertyInfo(passPropertyModel);
+    } else {
+      res = await query.insertPassPropertyInfo(poc);
+    }
+    Globals.endLoading(passPropertyScreenContext!);
+    debugPrint("THE RESULT ::::::::: $res");
+
+    if (res > 0) {
+      Get.back();
+      // Fetch saved records
+      getPassPropertyDetails();
+      Globals.showSnackBar(
+        title: "Success",
+        message: "Pass property info saved successfully",
         backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
         textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
       );

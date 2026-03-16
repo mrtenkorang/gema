@@ -1,11 +1,11 @@
-class RegisterOwnerModel {
+class RegisterPocModel {
   int? id;
   String title;
   String location;
   String propertyType;
   String propertyState;
   String rooms;
-  String occupier;
+  String relationship;
   String propertyDetails;
   String communicationMethod;
   String paymentMethod;
@@ -17,16 +17,12 @@ class RegisterOwnerModel {
   String gpsLocation;
   String streetName;
 
-  String? otherTitle;
-  String? otherLocation;
-  String? otherPropertyType;
-  String? otherOccupier;
   String agentID;
   String polygonID;
   int? status;
 
-  RegisterOwnerModel({
-     this.id,
+  RegisterPocModel({
+    this.id,
     required this.title,
     required this.agentID,
     required this.polygonID,
@@ -35,7 +31,7 @@ class RegisterOwnerModel {
     required this.propertyType,
     required this.propertyState,
     required this.rooms,
-    required this.occupier,
+    required this.relationship,
     required this.propertyDetails,
     required this.communicationMethod,
     required this.paymentMethod,
@@ -44,10 +40,6 @@ class RegisterOwnerModel {
     required this.ghanaCardNumber,
     required this.email,
     required this.gpsLocation,
-    this.otherTitle,
-    this.otherLocation,
-    this.otherPropertyType,
-    this.otherOccupier,
     this.status
   });
 
@@ -59,7 +51,7 @@ class RegisterOwnerModel {
       "property_type": propertyType,
       "property_state": propertyState,
       "rooms": rooms,
-      "relationship": occupier,
+      "relationship": relationship,
       "property_details": propertyDetails,
       "communication_method": communicationMethod,
       "payment_method": paymentMethod,
@@ -75,8 +67,8 @@ class RegisterOwnerModel {
     };
   }
 
-  factory RegisterOwnerModel.fromJson(Map<String, dynamic> json) {
-    return RegisterOwnerModel(
+  factory RegisterPocModel.fromJson(Map<String, dynamic> json) {
+    return RegisterPocModel(
       id: json["id"],
       title: json["title"] ?? "",
       agentID: json["agent_id"] ?? "",
@@ -84,7 +76,7 @@ class RegisterOwnerModel {
       propertyType: json["property_type"] ?? "",
       propertyState: json["property_state"] ?? "",
       rooms: json["rooms"].toString(),
-      occupier: json["occupier"] ?? "",
+      relationship: json["relationship"] ?? "",
       propertyDetails: json["property_details"] ?? "",
       communicationMethod: json["communication_method"] ?? "",
       paymentMethod: json["payment_method"] ?? "",
@@ -106,7 +98,7 @@ class RegisterOwnerModel {
         propertyType.isNotEmpty &&
         propertyState.isNotEmpty &&
         rooms.isNotEmpty &&
-        occupier.isNotEmpty &&
+        relationship.isNotEmpty &&
         propertyDetails.isNotEmpty &&
         communicationMethod.isNotEmpty &&
         paymentMethod.isNotEmpty &&
