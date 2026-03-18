@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gema/controller/constants/constants.dart';
 import 'package:gema/controller/db/queries.dart';
+import 'package:gema/controller/models/no_contact_model.dart';
 import 'package:gema/controller/models/pass_property_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
@@ -240,12 +241,18 @@ class RegisterController extends GetxController {
   RxList<RegisterOwnerModel> ownerDetails = <RegisterOwnerModel>[].obs;
   RxList<RegisterPocModel> pocDetails = <RegisterPocModel>[].obs;
   RxList<PassPropertyModel> passPropertyDetails = <PassPropertyModel>[].obs;
+  RxList<NoContactModel> noContactDetails = <NoContactModel>[].obs;
 
   RxString polygonId = "".obs;
 
   void getOwnerDetails() async {
     debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
     ownerDetails.value = await query.getOwnerInfoByPolygonId(polygonId.value);
+  }
+
+  void getNoContactDetails() async {
+    debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
+    noContactDetails.value = await query.getNoContactInfoByPolygonId(polygonId.value);
   }
 
   void getPassPropertyDetails() async {
@@ -338,6 +345,44 @@ class RegisterController extends GetxController {
       Get.back();
       // Fetch saved records
       getOwnerDetails();
+      Globals.showSnackBar(
+        title: "Success",
+        message: "Owner info saved successfully",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    } else {
+      Globals.showSnackBar(
+        title: "Failed",
+        message: "An unknown error occurred, please try again later",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    }
+  }
+
+  void saveNoContactInfoOffline() async {
+    final noContactModel = NoContactModel(
+      userID: "1",
+      polygonID: polygonId.value,
+      isNoContact: 1,
+      status: constants.pendingStatus,
+    );
+
+    Map<String, dynamic> noContact = noContactModel.toJson();
+
+    debugPrint("THE OWNER DATA TO INSERT :::::::::::: $noContact");
+    int res;
+
+    Globals.startLoading(registerOwnerScreenContext!);
+    res = await query.insertNoContactInfo(noContact);
+    Globals.endLoading(registerOwnerScreenContext!);
+    debugPrint("THE RESULT ::::::::: $res");
+
+    if (res > 0) {
+      Get.back();
+      // Fetch saved records
+      getNoContactDetails();
       Globals.showSnackBar(
         title: "Success",
         message: "Owner info saved successfully",

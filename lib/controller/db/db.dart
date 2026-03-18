@@ -101,5 +101,15 @@ class DatabaseService {
   ${tableHeads.status} INTEGER
 )
 ''');
+
+    await db.execute('''
+  CREATE TABLE ${tableHeads.noContactTableName} (
+  ${tableHeads.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${tableHeads.polygonID} TEXT,
+  ${tableHeads.agentID} TEXT,
+  ${tableHeads.isNoContact} INTEGER,
+  ${tableHeads.status} INTEGER
+)
+''');
   }
 }

@@ -1,5 +1,6 @@
 import 'package:gema/controller/db/db.dart';
 import 'package:gema/controller/db/table_heads.dart';
+import 'package:gema/controller/models/no_contact_model.dart';
 import 'package:gema/controller/models/pass_property_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
@@ -111,6 +112,20 @@ class Queries {
   }
 
 
+  /// No contact queries
 
+  Future<int> insertNoContactInfo(Map<String, dynamic> data) async {
+    final db = await DatabaseService().database;
+    return await db.insert(tableHeads.noContactTableName, data);
+  }
 
+  Future<List<NoContactModel>> getNoContactInfoByPolygonId(String polygonId) async {
+    final db = await DatabaseService().database;
+    final List<Map<String, dynamic>> data = await db.query(
+      tableHeads.noContactTableName,
+      where: '${tableHeads.polygonID} = ?',
+      whereArgs: [polygonId],
+    );
+    return data.map<NoContactModel>((e) => NoContactModel.fromJson(e)).toList();
+  }
 }

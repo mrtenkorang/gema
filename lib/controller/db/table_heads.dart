@@ -33,4 +33,8 @@ class TableHeads {
   String reason = "reason";
   String notes = "notes";
 
+  /// No Contact table heads
+  String noContactTableName = "no_contact_tbl";
+  String isNoContact = "is_no_contact";
+
 }

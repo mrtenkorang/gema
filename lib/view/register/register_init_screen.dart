@@ -135,94 +135,72 @@ class RegisterInitScreen extends StatelessWidget {
                               ),
                             ],
                           )
-                        : registerController.passPropertyDetails.isEmpty
+                        : registerController.passPropertyDetails.isNotEmpty
                         ? Column(
                             children: [
                               for (final passProperty
                                   in registerController.passPropertyDetails)
                                 Container(
+                                  width: double.maxFinite,
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.error.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Text(
-                                    passProperty.reason.toString(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
+                                  child: Column(
+                                    children: [
+                                      Text("Property passed"),
+                                      Text(
+                                        passProperty.reason.toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                             ],
                           )
-                        : registerController.ownerDetails.isEmpty
-                        ? Column(
-                            children: [
-                              ActionContainer(
-                                title: "Owner",
-                                icon: Icons.person,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return RegisterOwnerScreen();
-                                      },
-                                    ),
-                                  );
-                                },
-                                description: "Register owner of property",
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              ActionContainer(
-                                title: "POC",
-                                icon: Icons.group,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return RegisterPocScreen();
-                                      },
-                                    ),
-                                  );
-                                },
-                                description: "Register point of contact",
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              ActionContainer(
-                                title: "Pass",
-                                icon: Icons.play_arrow_outlined,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return PassPropertyScreen();
-                                      },
-                                    ),
-                                  );
-                                },
-                                description: "Ignore property(for now)",
-                              ),
-
-                              const SizedBox(height: 10),
-
-                              ActionContainer(
-                                title: "N/A",
-                                icon: Icons.close,
-                                onTap: () {},
-                                description: "No contact available",
-                              ),
-                            ],
-                          )
-                        : SingleChildScrollView(
+                        : registerController.ownerDetails.isNotEmpty
+                        ? registerController.noContactDetails.isNotEmpty ?
+                    Column(
+                      children: [
+                        for (final passProperty
+                        in registerController.passPropertyDetails)
+                          Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.error.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: [
+                                Text("N/A"),
+                                Text(
+                                  passProperty.polygonID.toString(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ):
+                         SingleChildScrollView(
                             child: Column(
                               children: [
                                 for (final owner
@@ -233,7 +211,69 @@ class RegisterInitScreen extends StatelessWidget {
                                   ),
                               ],
                             ),
-                          ),
+                          ):Column(
+                      children: [
+                        ActionContainer(
+                          title: "Owner",
+                          icon: Icons.person,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return RegisterOwnerScreen();
+                                },
+                              ),
+                            );
+                          },
+                          description: "Register owner of property",
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        ActionContainer(
+                          title: "POC",
+                          icon: Icons.group,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return RegisterPocScreen();
+                                },
+                              ),
+                            );
+                          },
+                          description: "Register point of contact",
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        ActionContainer(
+                          title: "Pass",
+                          icon: Icons.play_arrow_outlined,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return PassPropertyScreen();
+                                },
+                              ),
+                            );
+                          },
+                          description: "Ignore property(for now)",
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        ActionContainer(
+                          title: "N/A",
+                          icon: Icons.close,
+                          onTap: () {
+                            registerController.saveNoContactInfoOffline();
+                          },
+                          description: "No contact available",
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
