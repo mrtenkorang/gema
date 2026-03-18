@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
 import 'package:gema/view/register/pass/pass_property.dart';
+import 'package:gema/view/register/register_business_owner/register_business_owner.dart';
 import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/register/register_owner/register_owner_screen.dart';
 import 'package:gema/view/register/register_poc/register_poc_screen.dart';
 import 'package:gema/view/register/register_widgets/action_container.dart';
 import 'package:get/get.dart';
 
-class RegisterInitScreen extends StatelessWidget {
+class RegisterInitScreen extends StatefulWidget {
   const RegisterInitScreen({super.key});
 
   @override
+  State<RegisterInitScreen> createState() => _RegisterInitScreenState();
+}
+
+class _RegisterInitScreenState extends State<RegisterInitScreen> {
+  @override
   Widget build(BuildContext context) {
     final registerController = Get.put(RegisterController());
+    registerController.registerInitScreenContext = context;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -48,7 +55,7 @@ class RegisterInitScreen extends StatelessWidget {
             children: [
               // Property Tab
               Obx(
-                () => Column(
+                    () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -94,10 +101,10 @@ class RegisterInitScreen extends StatelessWidget {
                                         .textTheme
                                         .titleMedium!
                                         .copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimary,
-                                        ),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -107,69 +114,52 @@ class RegisterInitScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    registerController.pocDetails.isNotEmpty
+                    // FIX: Corrected ternary order — ownerDetails first, then pocDetails,
+                    // then passPropertyDetails, then noContactDetails, then action buttons.
+                    // Also fixed noContactDetails branch to iterate noContactDetails (not passPropertyDetails).
+                    registerController.ownerDetails.isNotEmpty
+                        ? SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (final owner
+                          in registerController.ownerDetails)
+                            ownerDisplayCard(
+                              ownerInfo: owner,
+                              context: context,
+                            ),
+                        ],
+                      ),
+                    )
+                        : registerController.pocDetails.isNotEmpty
                         ? Column(
-                            children: [
-                              SizedBox(height: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "POCs",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  for (final poc
-                                      in registerController.pocDetails)
-                                    pocDisplayCard(
-                                      ownerInfo: poc,
-                                      context: context,
-                                    ),
-                                ],
+                      children: [
+                        SizedBox(height: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "POCs",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                            ],
-                          )
+                            ),
+                            SizedBox(height: 10),
+                            for (final poc
+                            in registerController.pocDetails)
+                              pocDisplayCard(
+                                ownerInfo: poc,
+                                context: context,
+                              ),
+                          ],
+                        ),
+                      ],
+                    )
                         : registerController.passPropertyDetails.isNotEmpty
                         ? Column(
-                            children: [
-                              for (final passProperty
-                                  in registerController.passPropertyDetails)
-                                Container(
-                                  width: double.maxFinite,
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.error.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text("Property passed"),
-                                      Text(
-                                        passProperty.reason.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge!
-                                            .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          )
-                        : registerController.ownerDetails.isNotEmpty
-                        ? registerController.noContactDetails.isNotEmpty ?
-                    Column(
                       children: [
                         for (final passProperty
                         in registerController.passPropertyDetails)
@@ -184,9 +174,9 @@ class RegisterInitScreen extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                Text("N/A"),
+                                Text("Property passed"),
                                 Text(
-                                  passProperty.polygonID.toString(),
+                                  passProperty.reason.toString(),
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleLarge!
@@ -199,19 +189,41 @@ class RegisterInitScreen extends StatelessWidget {
                             ),
                           ),
                       ],
-                    ):
-                         SingleChildScrollView(
+                    )
+                        : registerController.noContactDetails.isNotEmpty
+                        ? Column(
+                      children: [
+                        // FIX: iterate noContactDetails, not passPropertyDetails
+                        for (final noContact
+                        in registerController.noContactDetails)
+                          Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.error.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Column(
                               children: [
-                                for (final owner
-                                    in registerController.ownerDetails)
-                                  ownerDisplayCard(
-                                    ownerInfo: owner,
-                                    context: context,
+                                Text("N/A"),
+                                Text(
+                                  noContact.polygonID.toString(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
+                                ),
                               ],
                             ),
-                          ):Column(
+                          ),
+                      ],
+                    )
+                        : Column(
                       children: [
                         ActionContainer(
                           title: "Owner",
@@ -269,6 +281,10 @@ class RegisterInitScreen extends StatelessWidget {
                           icon: Icons.close,
                           onTap: () {
                             registerController.saveNoContactInfoOffline();
+                            setState(() {});
+                            debugPrint(
+                              "THE SAVED CONTACT INFO:::: ${registerController.noContactDetails}",
+                            );
                           },
                           description: "No contact available",
                         ),
@@ -280,7 +296,7 @@ class RegisterInitScreen extends StatelessWidget {
 
               // Business Tab
               Obx(
-                () => Column(
+                    () => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -294,33 +310,62 @@ class RegisterInitScreen extends StatelessWidget {
                     Expanded(
                       child: registerController.businesses.isEmpty
                           ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.apartment, size: 40),
-                                  Text(
-                                    "No businesses found",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.separated(
-                              itemCount: registerController.businesses.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  title: Text(
-                                    registerController.businesses[index],
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+
+                            ActionContainer(
+                              title: "Owner",
+                              icon: Icons.person,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return RegisterBusinessOwnerScreen();
+                                    },
                                   ),
                                 );
                               },
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 10),
+                              description: "Register business owner",
                             ),
+
+                            const SizedBox(height: 10),
+
+                            ActionContainer(
+                              title: "POC",
+                              icon: Icons.group,
+                              onTap: () {
+                                registerController.saveNoContactInfoOffline();
+                                setState(() {});
+                                debugPrint(
+                                  "THE SAVED CONTACT INFO:::: ${registerController.noContactDetails}",
+                                );
+                              },
+                              description: "Register business point of contact",
+                            ),
+                            // Icon(Icons.apartment, size: 40),
+                            // Text(
+                            //   "No businesses found",
+                            //   style: TextStyle(
+                            //     fontSize: 16,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      )
+                          : ListView.separated(
+                        itemCount: registerController.businesses.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              registerController.businesses[index],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
+                      ),
                     ),
                   ],
                 ),
@@ -380,9 +425,9 @@ class RegisterInitScreen extends StatelessWidget {
   }
 
   Future<dynamic> actionOwnerBottomSheet(
-    BuildContext context,
-    RegisterOwnerModel ownerInfo,
-  ) {
+      BuildContext context,
+      RegisterOwnerModel ownerInfo,
+      ) {
     debugPrint("THE GPS:::::::${ownerInfo.toJson()}");
     return showModalBottomSheet(
       context: context,
@@ -495,10 +540,10 @@ class RegisterInitScreen extends StatelessWidget {
                                         .textTheme
                                         .titleSmall!
                                         .copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.error,
-                                        ),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -558,9 +603,9 @@ class RegisterInitScreen extends StatelessWidget {
   }
 
   Future<dynamic> actionPocBottomSheet(
-    BuildContext context,
-    RegisterPocModel ownerInfo,
-  ) {
+      BuildContext context,
+      RegisterPocModel ownerInfo,
+      ) {
     debugPrint("THE GPS:::::::${ownerInfo.toJson()}");
     return showModalBottomSheet(
       context: context,
@@ -671,10 +716,10 @@ class RegisterInitScreen extends StatelessWidget {
                                         .textTheme
                                         .titleSmall!
                                         .copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.error,
-                                        ),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
                                   ),
                                 ),
                               ],

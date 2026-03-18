@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
   BuildContext? registerOwnerScreenContext;
+  BuildContext? registerInitScreenContext;
   BuildContext? registerPOCScreenContext;
   BuildContext? passPropertyScreenContext;
 
@@ -30,6 +31,12 @@ class RegisterController extends GetxController {
     "Miss",
     "Others",
   ].obs;
+
+  RxList<String> gender = <String>[
+    "Male",
+    "Female"
+  ].obs;
+
   RxList<String> passPropertyReasons = <String>[
     "Owner lives abroad", "Property locked", "Tenant refused info", "Owner deceased", "Other"
   ].obs;
@@ -96,6 +103,24 @@ class RegisterController extends GetxController {
     "Mobile Money",
     "USSD",
   ].obs;
+  RxList<String> businessNature = <String>[
+    "Sole Proprietorship",
+    "Partnership",
+    "Limited Liability",
+    "Other"
+  ].obs;
+  RxList<String> businessCategories = <String>[
+    "CAT A",
+    "CAT B",
+    "CAT C",
+    "CAT D"
+  ].obs;
+  RxList<String> businessStructures = <String>[
+  "Block",
+  "Container",
+  "Kiosk",
+  "Other",
+  ].obs;
   RxList<String> locations = <String>[
     "Ashongman Estate",
     "Kwabenya",
@@ -131,6 +156,7 @@ class RegisterController extends GetxController {
   TextEditingController contactNumberController = TextEditingController();
   TextEditingController ghanaCardController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+
   // TextEditingController locationController = TextEditingController();
   TextEditingController gpsLocationController = TextEditingController();
   TextEditingController streetNameController = TextEditingController();
@@ -143,6 +169,28 @@ class RegisterController extends GetxController {
   TextEditingController notesController = TextEditingController();
   TextEditingController otherPocRelationshipController =
       TextEditingController();
+
+
+  /// Controllers for Business Owner
+  RxString selectedGenderBusinessOwner = "".obs;
+  RxString selectedBusinessNature = "".obs;
+  RxString selectedBusinessCategory = "".obs;
+  RxString selectedBusinessStructure = "".obs;
+
+
+  TextEditingController ageControllerBusinessOwner = TextEditingController();
+  TextEditingController ownerOfStructureBusinessOwnerController = TextEditingController();
+  TextEditingController businessNameController = TextEditingController();
+  TextEditingController businessTypeController = TextEditingController();
+  TextEditingController businessStructureController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  TextEditingController landmarkController = TextEditingController();
+  TextEditingController permitNumberController = TextEditingController();
+  TextEditingController previousArrearsController = TextEditingController();
+
+  // these fields may be optional - depends
+  TextEditingController otherBusinessNatureController = TextEditingController();
+  TextEditingController otherBusinessStructureController = TextEditingController();
 
   void initOwnerFields() {
     ownerNameController.text = ownerInfo!.ownerName;
@@ -374,27 +422,27 @@ class RegisterController extends GetxController {
     debugPrint("THE OWNER DATA TO INSERT :::::::::::: $noContact");
     int res;
 
-    Globals.startLoading(registerOwnerScreenContext!);
+    Globals.startLoading(registerInitScreenContext!);
     res = await query.insertNoContactInfo(noContact);
-    Globals.endLoading(registerOwnerScreenContext!);
+    Globals.endLoading(registerInitScreenContext!);
     debugPrint("THE RESULT ::::::::: $res");
 
     if (res > 0) {
-      Get.back();
+      // Get.back();
       // Fetch saved records
       getNoContactDetails();
       Globals.showSnackBar(
         title: "Success",
         message: "Owner info saved successfully",
-        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
-        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+        backgroundColor: Theme.of(registerInitScreenContext!).primaryColor,
+        textColor: Theme.of(registerInitScreenContext!).colorScheme.onPrimary,
       );
     } else {
       Globals.showSnackBar(
         title: "Failed",
         message: "An unknown error occurred, please try again later",
-        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
-        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+        backgroundColor: Theme.of(registerInitScreenContext!).primaryColor,
+        textColor: Theme.of(registerInitScreenContext!).colorScheme.onPrimary,
       );
     }
   }

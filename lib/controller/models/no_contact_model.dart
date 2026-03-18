@@ -15,7 +15,7 @@ class NoContactModel {
 
   factory NoContactModel.fromJson(Map<String, dynamic> json) => NoContactModel(
     id: json['id'],
-    userID: json['user_id'],
+    userID: json['agent_id'],
     polygonID: json['polygon_id'],
     isNoContact: json['is_no_contact'] ?? 1,
     status: json['status'],
@@ -23,7 +23,7 @@ class NoContactModel {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'user_id': userID,
+    'agent_id': userID,
     'polygon_id': polygonID,
     'is_no_contact': isNoContact,
     'status': status,
