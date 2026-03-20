@@ -111,5 +111,35 @@ class DatabaseService {
   ${tableHeads.status} INTEGER
 )
 ''');
+
+    await db.execute('''
+  CREATE TABLE ${tableHeads.businessOwnerInfoTableName} (
+  ${tableHeads.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+  ${tableHeads.ownerOfStructure} TEXT,
+  ${tableHeads.tinGhanaCard} TEXT,
+  ${tableHeads.email} TEXT,
+  ${tableHeads.age} TEXT,
+  ${tableHeads.title} TEXT,
+  ${tableHeads.gender} TEXT,
+  ${tableHeads.ownerName} TEXT,
+  ${tableHeads.contactNumber} TEXT,
+  ${tableHeads.ghanaCardNumber} TEXT,
+  ${tableHeads.businessName} TEXT,
+  ${tableHeads.businessType} TEXT,
+  ${tableHeads.natureOfBusiness} TEXT,
+  ${tableHeads.businessCategory} TEXT,
+  ${tableHeads.businessStructure} TEXT,
+  ${tableHeads.location} TEXT,
+  ${tableHeads.landmark} TEXT,
+  ${tableHeads.gpsAddressHouseNumber} TEXT,
+  ${tableHeads.permitNo} TEXT,
+  ${tableHeads.previousArrears} TEXT,
+  ${tableHeads.preferredMessagingMethod} TEXT,
+  ${tableHeads.preferredPaymentMethod} TEXT,
+  ${tableHeads.polygonID} TEXT,
+  ${tableHeads.agentID} TEXT,
+  ${tableHeads.status} INTEGER
+)
+''');
   }
 }

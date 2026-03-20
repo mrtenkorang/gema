@@ -2,6 +2,7 @@ import 'package:gema/controller/db/db.dart';
 import 'package:gema/controller/db/table_heads.dart';
 import 'package:gema/controller/models/no_contact_model.dart';
 import 'package:gema/controller/models/pass_property_model.dart';
+import 'package:gema/controller/models/register_business_owner_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
 
@@ -127,5 +128,29 @@ class Queries {
       whereArgs: [polygonId],
     );
     return data.map<NoContactModel>((e) => NoContactModel.fromJson(e)).toList();
+  }
+
+
+
+  /// Business queries
+  Future<int> insertBusinessOwnerInfo(Map<String, dynamic> data) async {
+    final db = await DatabaseService().database;
+    return await db.insert(tableHeads.businessOwnerInfoTableName, data);
+  }
+
+  Future<int> updateBusinessOwnerInfo(RegisterBusinessOwnerModel ownerInfo) async {
+    final db = await DatabaseService().database;
+    return await db.update(tableHeads.businessOwnerInfoTableName, ownerInfo.toJson(),
+        where: '${tableHeads.id} = ?', whereArgs: [ownerInfo.id]);
+  }
+
+  Future<List<RegisterBusinessOwnerModel>> getBusinessOwnerInfoByPolygonId(String polygonId) async {
+    final db = await DatabaseService().database;
+    final List<Map<String, dynamic>> data = await db.query(
+      tableHeads.businessOwnerInfoTableName,
+      where: '${tableHeads.polygonID} = ?',
+      whereArgs: [polygonId],
+    );
+    return data.map<RegisterBusinessOwnerModel>((e) => RegisterBusinessOwnerModel.fromJson(e)).toList();
   }
 }
