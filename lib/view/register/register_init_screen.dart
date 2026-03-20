@@ -3,6 +3,7 @@ import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
 import 'package:gema/view/register/pass/pass_property.dart';
 import 'package:gema/view/register/register_business_owner/register_business_owner.dart';
+import 'package:gema/view/register/register_business_poc/register_business_poc.dart';
 import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/register/register_owner/register_owner_screen.dart';
 import 'package:gema/view/register/register_poc/register_poc_screen.dart';
@@ -308,7 +309,7 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
                     const SizedBox(height: 10),
 
                     Expanded(
-                      child: registerController.businesses.isEmpty
+                      child: registerController.businessOwnerDetails.isEmpty
                           ? Center(
                         child: Column(
                           children: [
@@ -335,11 +336,10 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
                               title: "POC",
                               icon: Icons.group,
                               onTap: () {
-                                registerController.saveNoContactInfoOffline();
-                                setState(() {});
-                                debugPrint(
-                                  "THE SAVED CONTACT INFO:::: ${registerController.noContactDetails}",
-                                );
+                                Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  return RegisterBusinessPocScreen();
+                                }));
+
                               },
                               description: "Register business point of contact",
                             ),
@@ -359,7 +359,7 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(
-                              registerController.businesses[index],
+                              registerController.businessOwnerDetails[index].businessName,
                             ),
                           );
                         },
