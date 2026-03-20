@@ -3,6 +3,7 @@ import 'package:gema/controller/constants/constants.dart';
 import 'package:gema/controller/db/queries.dart';
 import 'package:gema/controller/models/no_contact_model.dart';
 import 'package:gema/controller/models/pass_property_model.dart';
+import 'package:gema/controller/models/register_business_owner_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
 import 'package:gema/view/shared/widgets/globals.dart';
@@ -20,6 +21,7 @@ class RegisterController extends GetxController {
   RegisterOwnerModel? ownerInfo;
   RegisterPocModel? pocInfo;
   PassPropertyModel? passPropertyInfo;
+  RegisterBusinessOwnerModel? businessOwnerInfo;
 
   RxList<String> businesses = <String>[].obs;
   RxList<String> titles = <String>[
@@ -32,13 +34,14 @@ class RegisterController extends GetxController {
     "Others",
   ].obs;
 
-  RxList<String> gender = <String>[
-    "Male",
-    "Female"
-  ].obs;
+  RxList<String> gender = <String>["Male", "Female"].obs;
 
   RxList<String> passPropertyReasons = <String>[
-    "Owner lives abroad", "Property locked", "Tenant refused info", "Owner deceased", "Other"
+    "Owner lives abroad",
+    "Property locked",
+    "Tenant refused info",
+    "Owner deceased",
+    "Other",
   ].obs;
 
   RxList<String> relationShips = <String>[
@@ -107,19 +110,19 @@ class RegisterController extends GetxController {
     "Sole Proprietorship",
     "Partnership",
     "Limited Liability",
-    "Other"
+    "Other",
   ].obs;
   RxList<String> businessCategories = <String>[
     "CAT A",
     "CAT B",
     "CAT C",
-    "CAT D"
+    "CAT D",
   ].obs;
   RxList<String> businessStructures = <String>[
-  "Block",
-  "Container",
-  "Kiosk",
-  "Other",
+    "Block",
+    "Container",
+    "Kiosk",
+    "Other",
   ].obs;
   RxList<String> locations = <String>[
     "Ashongman Estate",
@@ -164,12 +167,12 @@ class RegisterController extends GetxController {
   TextEditingController otherTitleController = TextEditingController();
   TextEditingController otherLocationController = TextEditingController();
   TextEditingController otherPropertyTypeController = TextEditingController();
-  TextEditingController otherPassPropertyReasonController = TextEditingController();
+  TextEditingController otherPassPropertyReasonController =
+      TextEditingController();
   TextEditingController otherOccupierController = TextEditingController();
   TextEditingController notesController = TextEditingController();
   TextEditingController otherPocRelationshipController =
       TextEditingController();
-
 
   /// Controllers for Business Owner
   RxString selectedGenderBusinessOwner = "".obs;
@@ -177,9 +180,9 @@ class RegisterController extends GetxController {
   RxString selectedBusinessCategory = "".obs;
   RxString selectedBusinessStructure = "".obs;
 
-
   TextEditingController ageControllerBusinessOwner = TextEditingController();
-  TextEditingController ownerOfStructureBusinessOwnerController = TextEditingController();
+  TextEditingController ownerOfStructureBusinessOwnerController =
+      TextEditingController();
   TextEditingController businessNameController = TextEditingController();
   TextEditingController businessTypeController = TextEditingController();
   TextEditingController businessStructureController = TextEditingController();
@@ -190,7 +193,8 @@ class RegisterController extends GetxController {
 
   // these fields may be optional - depends
   TextEditingController otherBusinessNatureController = TextEditingController();
-  TextEditingController otherBusinessStructureController = TextEditingController();
+  TextEditingController otherBusinessStructureController =
+      TextEditingController();
 
   void initOwnerFields() {
     ownerNameController.text = ownerInfo!.ownerName;
@@ -290,6 +294,8 @@ class RegisterController extends GetxController {
   RxList<RegisterPocModel> pocDetails = <RegisterPocModel>[].obs;
   RxList<PassPropertyModel> passPropertyDetails = <PassPropertyModel>[].obs;
   RxList<NoContactModel> noContactDetails = <NoContactModel>[].obs;
+  RxList<RegisterBusinessOwnerModel> businessOwnerDetails =
+      <RegisterBusinessOwnerModel>[].obs;
 
   RxString polygonId = "".obs;
 
@@ -298,14 +304,31 @@ class RegisterController extends GetxController {
     ownerDetails.value = await query.getOwnerInfoByPolygonId(polygonId.value);
   }
 
+  void getBusinessOwnerDetails() async {
+    debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
+    businessOwnerDetails.value = await query.getBusinessOwnerInfoByPolygonId(
+      polygonId.value,
+    );
+  }
+
+  // void deleteBusinessOwner() async {
+  //   debugPrint("THE BUSINESS OWNER ::::::::::::: ${businessOwnerInfo!.toJson()}");
+  //   await query.delete(businessOwnerInfo!.id!);
+  //   getBusinessOwnerDetails();
+  // }
+
   void getNoContactDetails() async {
     debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
-    noContactDetails.value = await query.getNoContactInfoByPolygonId(polygonId.value);
+    noContactDetails.value = await query.getNoContactInfoByPolygonId(
+      polygonId.value,
+    );
   }
 
   void getPassPropertyDetails() async {
     debugPrint("THE POLYGON ID ::::::::::::: ${polygonId.value}");
-    passPropertyDetails.value = await query.getPassPropertyInfoByPolygonId(polygonId.value);
+    passPropertyDetails.value = await query.getPassPropertyInfoByPolygonId(
+      polygonId.value,
+    );
   }
 
   void getPocDetails() async {
@@ -566,6 +589,71 @@ class RegisterController extends GetxController {
         textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
       );
     }
+  }
+
+  void saveBusinessOwnerOffline() async {
+    final businessOwnerModel = RegisterBusinessOwnerModel(
+      title: selectedTitle.value,
+      ownerOfStructure: selectedBusinessStructure.value,
+      ownerName: businessNameController.text,
+      contactNumber: contactNumberController.text,
+      tinGhanaCard: ghanaCardController.text,
+      email: emailController.text,
+      age: ageControllerBusinessOwner.text,
+      gender: selectedGenderBusinessOwner.value,
+      polygonID: polygonId.value,
+      agentID: "1",
+      status: constants.pendingStatus.toString(),
+      businessName: businessNameController.text,
+      businessType: businessTypeController.text,
+      natureOfBusiness: selectedBusinessNature.value.isNotEmpty
+          ? selectedBusinessNature.value
+          : otherBusinessNatureController.text,
+      businessCategory: selectedBusinessCategory.value,
+      businessStructure: selectedBusinessStructure.value,
+      location: locationController.text,
+      landmark: landmarkController.text,
+      gpsAddressHouseNumber: gpsLocationController.text,
+      permitNo: permitNumberController.text,
+      previousArrears: previousArrearsController.text,
+      preferredMessagingMethod: selectedMethodOfCommunication.value,
+      preferredPaymentMethod: selectedMethodOfPayment.value,
+    );
+
+    final Map<String, dynamic> businessOwner = businessOwnerModel.toJson();
+
+    debugPrint("THE POC DATA TO INSERT :::::::::::: $businessOwner");
+    int res;
+
+    Globals.startLoading(passPropertyScreenContext!);
+    if (businessOwnerInfo != null && businessOwnerInfo!.id!.toString().isNotEmpty) {
+      businessOwnerModel.id = passPropertyInfo!.id;
+      res = await query.updateBusinessOwnerInfo(businessOwnerModel);
+    } else {
+      res = await query.insertBusinessOwnerInfo(businessOwner);
+    }
+    Globals.endLoading(passPropertyScreenContext!);
+    debugPrint("THE RESULT ::::::::: $res");
+
+    if (res > 0) {
+      Get.back();
+      // Fetch saved records
+      getBusinessOwnerDetails();
+      Globals.showSnackBar(
+        title: "Success",
+        message: "Business Owner info saved successfully",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    } else {
+      Globals.showSnackBar(
+        title: "Failed",
+        message: "An unknown error occurred, please try again later",
+        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+      );
+    }
+
   }
 
   void submitOwnerInfo() async {

@@ -235,8 +235,6 @@ class _RegisterBusinessOwnerScreenState extends State<RegisterBusinessOwnerScree
                         },
                       ),
 
-
-
                       SizedBox(height: 10),
                       getHeading(text: "Nature Of Business"),
                       Obx(
