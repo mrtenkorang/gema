@@ -27,7 +27,7 @@ class _RegisterBusinessOwnerScreenState extends State<RegisterBusinessOwnerScree
 
   @override
   Widget build(BuildContext context) {
-    registerController.registerOwnerScreenContext = context;
+    registerController.registerBusinessOwnerScreenContext = context;
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -545,7 +545,7 @@ class _RegisterBusinessOwnerScreenState extends State<RegisterBusinessOwnerScree
                         //Increase page number to move to the next page
                         registerController.pageNumber.value++;
                       } else {
-                        registerController.saveOwnerInfoOffline();
+                        registerController.saveBusinessOwnerOffline();
                       }
                     },
                     child: Obx(
@@ -573,7 +573,7 @@ class _RegisterBusinessOwnerScreenState extends State<RegisterBusinessOwnerScree
 
   Widget getValidationNumber({String? validationNumber}) {
     final registerController = Get.put(RegisterController());
-    final theme = Theme.of(registerController.registerOwnerScreenContext!);
+    final theme = Theme.of(registerController.registerBusinessOwnerScreenContext!);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       width: double.infinity,
@@ -608,7 +608,7 @@ class _RegisterBusinessOwnerScreenState extends State<RegisterBusinessOwnerScree
     return Text(
       text,
       style: Theme.of(
-        registerController.registerOwnerScreenContext!,
+        registerController.registerBusinessOwnerScreenContext!,
       ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
     );
   }

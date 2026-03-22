@@ -14,6 +14,7 @@ class RegisterController extends GetxController {
   BuildContext? registerInitScreenContext;
   BuildContext? registerPOCScreenContext;
   BuildContext? passPropertyScreenContext;
+  BuildContext? registerBusinessOwnerScreenContext;
 
   final constants = Constants();
   final query = Queries();
@@ -625,14 +626,14 @@ class RegisterController extends GetxController {
     debugPrint("THE POC DATA TO INSERT :::::::::::: $businessOwner");
     int res;
 
-    Globals.startLoading(passPropertyScreenContext!);
+    Globals.startLoading(registerBusinessOwnerScreenContext!);
     if (businessOwnerInfo != null && businessOwnerInfo!.id!.toString().isNotEmpty) {
       businessOwnerModel.id = passPropertyInfo!.id;
       res = await query.updateBusinessOwnerInfo(businessOwnerModel);
     } else {
       res = await query.insertBusinessOwnerInfo(businessOwner);
     }
-    Globals.endLoading(passPropertyScreenContext!);
+    Globals.endLoading(registerBusinessOwnerScreenContext!);
     debugPrint("THE RESULT ::::::::: $res");
 
     if (res > 0) {
@@ -642,15 +643,15 @@ class RegisterController extends GetxController {
       Globals.showSnackBar(
         title: "Success",
         message: "Business Owner info saved successfully",
-        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
-        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+        backgroundColor: Theme.of(registerBusinessOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerBusinessOwnerScreenContext!).colorScheme.onPrimary,
       );
     } else {
       Globals.showSnackBar(
         title: "Failed",
         message: "An unknown error occurred, please try again later",
-        backgroundColor: Theme.of(registerOwnerScreenContext!).primaryColor,
-        textColor: Theme.of(registerOwnerScreenContext!).colorScheme.onPrimary,
+        backgroundColor: Theme.of(registerBusinessOwnerScreenContext!).primaryColor,
+        textColor: Theme.of(registerBusinessOwnerScreenContext!).colorScheme.onPrimary,
       );
     }
 
@@ -691,6 +692,7 @@ class RegisterController extends GetxController {
       contactNumber: contactNumberController.text,
 
       ghanaCardNumber: ghanaCardController.text,
+
 
       email: emailController.text,
 

@@ -149,6 +149,10 @@ class MapScreenController extends GetxController{
                         registerController.polygonId.value = polygonId;
                         // registerController.polygonId.value = "1";
                         registerController.getOwnerDetails();
+                        registerController.getBusinessOwnerDetails();
+                        registerController.getPassPropertyDetails();
+                        registerController.getNoContactDetails();
+                        registerController.getPocDetails();
 
                         Navigator.push(context, MaterialPageRoute(builder: (context){
                           return RegisterInitScreen();

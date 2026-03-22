@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gema/controller/models/register_business_owner_model.dart';
 import 'package:gema/controller/models/register_owner_model.dart';
 import 'package:gema/controller/models/register_poc_model.dart';
 import 'package:gema/view/register/pass/pass_property.dart';
@@ -8,6 +9,7 @@ import 'package:gema/view/register/register_controller.dart';
 import 'package:gema/view/register/register_owner/register_owner_screen.dart';
 import 'package:gema/view/register/register_poc/register_poc_screen.dart';
 import 'package:gema/view/register/register_widgets/action_container.dart';
+import 'package:gema/view/shared/widgets/button.dart';
 import 'package:get/get.dart';
 
 class RegisterInitScreen extends StatefulWidget {
@@ -22,6 +24,7 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
   Widget build(BuildContext context) {
     final registerController = Get.put(RegisterController());
     registerController.registerInitScreenContext = context;
+    final theme = Theme.of(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -354,18 +357,94 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
                           ],
                         ),
                       )
-                          : ListView.separated(
-                        itemCount: registerController.businesses.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(
-                              registerController.businessOwnerDetails[index].businessName,
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                      ),
+                          :Column(
+                            children: [
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    for (final owner
+                                    in registerController.businessOwnerDetails)
+                                      ownerBusinessOwnerDisplayCard(
+                                        ownerInfo: owner,
+                                        context: context,
+                                      ),
+                                
+                                  ],
+                                ),
+                              ),
+                              Spacer(),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomButton(
+                                      horizontalPadding: 10,
+                                      backgroundColor: theme.cardColor,
+                                      isFullWidth: false,
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context){
+                                          return RegisterBusinessPocScreen();
+                                        }));
+
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
+                                          Text(
+                                            "Business POC",
+                                            style: theme.textTheme.titleSmall!.copyWith(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: CustomButton(
+                                      horizontalPadding: 10,
+                                      backgroundColor: theme.primaryColor,
+                                      isFullWidth: false,
+                                      onTap: () async {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return RegisterBusinessOwnerScreen();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.add),
+                                            SizedBox(width: 5),
+                                            Text("Business Owner"),
+
+                                          ],
+                                        )
+
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20,)
+                            ],
+                          )
+                      //     : ListView.separated(
+                      //   itemCount: registerController.businessOwnerDetails.length,
+                      //   itemBuilder: (context, index) {
+                      //     return ListTile(
+                      //       title: Text(
+                      //         registerController.businessOwnerDetails[index].businessName,
+                      //       ),
+                      //     );
+                      //   },
+                      //   separatorBuilder: (context, index) =>
+                      //   const SizedBox(height: 10),
+                      // ),
                     ),
                   ],
                 ),
@@ -414,6 +493,32 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
           await actionOwnerBottomSheet(context, ownerInfo);
         },
         leading: Icon(Icons.person, color: theme.primaryColor),
+        title: Text(
+          ownerInfo.ownerName,
+          style: theme.textTheme.titleLarge!.copyWith(
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget ownerBusinessOwnerDisplayCard({
+    required RegisterBusinessOwnerModel ownerInfo,
+    required BuildContext context,
+  }) {
+    final theme = Theme.of(context);
+    return Container(
+      margin: EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: theme.primaryColor.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        onTap: () async {
+          await actionBusinessOwnerBottomSheet(context, ownerInfo);
+        },
+        leading: Icon(Icons.business, color: theme.primaryColor),
         title: Text(
           ownerInfo.ownerName,
           style: theme.textTheme.titleLarge!.copyWith(
@@ -492,6 +597,159 @@ class _RegisterInitScreenState extends State<RegisterInitScreen> {
                               },
                             ),
                           );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Edit",
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          final registerController = Get.put(
+                            RegisterController(),
+                          );
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Confirm Delete"),
+                              content: const Text(
+                                "Are you sure you want to delete this owner?",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context, false);
+                                    await registerController.deleteOwner();
+                                  },
+                                  child: const Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text(
+                                    "Delete",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.error,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Delete",
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+  Future<dynamic> actionBusinessOwnerBottomSheet(
+      BuildContext context,
+      RegisterBusinessOwnerModel ownerInfo,
+      ) {
+    debugPrint("THE GPS:::::::${ownerInfo.toJson()}");
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        final theme = Theme.of(context);
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: Icon(Icons.person, color: theme.primaryColor),
+                title: Text(ownerInfo.ownerName),
+              ),
+              ListTile(
+                leading: Icon(Icons.call, color: theme.primaryColor),
+                title: Text(ownerInfo.contactNumber),
+              ),
+              ListTile(
+                leading: Icon(Icons.mail, color: theme.primaryColor),
+                title: Text(ownerInfo.email),
+              ),
+              ListTile(
+                leading: Icon(Icons.location_on, color: theme.primaryColor),
+                title: Text(ownerInfo.location),
+              ),
+              ListTile(
+                leading: Icon(Icons.apartment, color: theme.primaryColor),
+                title: Text(ownerInfo.businessName),
+              ),
+              ListTile(
+                // leading: Icon(Icons.money, color: theme.primaryColor),
+                title: Text("Business Category: ${ownerInfo.businessCategory}"),
+              ),
+              ListTile(
+                // leading: Icon(Icons.phone, color: theme.primaryColor),
+                title: Text(
+                  "Business Type: ${ownerInfo.businessType}",
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) {
+                          //       return RegisterOwnerScreen(
+                          //         ownerInfo: ownerInfo,
+                          //       );
+                          //     },
+                          //   ),
+                          // );
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 20),

@@ -80,7 +80,7 @@ class RegisterBusinessOwnerModel {
       gender:                   json['gender'] ?? '',
       polygonID:                json['polygon_id'] ?? '',
       agentID:                  json['agent_id'] ?? '',
-      status:                   json['status'] ?? '',
+      status:                   json['status'].toString(),
 
       // Page 2
       businessName:             json['business_name'] ?? '',
